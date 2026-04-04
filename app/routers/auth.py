@@ -1,0 +1,20 @@
+from ..database import get_db
+from sqlalchemy.orm import Session
+from fastapi import APIRouter,Depends,status
+from fastapi.exceptions import HTTPException
+from ..schemas import UserLogin
+from .. import models,utils
+
+router = APIRouter()
+
+@router.post("/login")
+async def login(credentials:UserLogin,db:Session=Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email==credentials.email).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Invalid Credentials!")
+
+    if not utils.verify(credentials.password,user.password):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Invalid Credentials!")
+    
+    return {"token","Example token"}
