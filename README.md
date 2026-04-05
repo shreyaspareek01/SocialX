@@ -16,6 +16,7 @@ This is a full-stack social application project currently in its foundational de
 - **Environment Management:** Secure credential management using `.env`.
 - **User CRUD:** Ability to create and retrieve user data with password hashing (bcrypt).
 - **Post CRUD:** RESTful API endpoints to Create, Read, Update, and Delete social posts.
+- **Authentication:** Token-based JWT (JSON Web Token) authentication securing endpoints.
 - **CORS Configured:** Backend is ready to securely accept requests from the React frontend.
 - **Modular Routing:** Clean codebase utilizing FastAPI's `APIRouter` for posts, users, and auth.
 
@@ -44,6 +45,9 @@ DATABASE_PORT=5432
 DATABASE_PASSWORD=your_local_password
 DATABASE_NAME=fastapi-project
 DATABASE_USERNAME=postgres
+JWT_SECRET_KEY=your_super_secret_key_here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
 ### 3. Run the Server
@@ -58,6 +62,5 @@ You can access the automated interactive API documentation by visiting `http://l
 
 ## 🔮 Roadmap
 
-- [ ] Add JWT Authentication & Login endpoints.
 - [ ] Add Database Foreign Key relationships (Users own Posts).
 - [ ] Build out the UI in the `react-frontend` folder.
