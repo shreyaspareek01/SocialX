@@ -1,11 +1,10 @@
 from ..schemas import PostCreate,PostResponse
 from sqlalchemy.orm import Session
 from ..database import get_db 
-from .. import models
+from .. import models,oauth2
 from fastapi import status,Response,APIRouter,Depends
 from fastapi.exceptions import HTTPException
-
-
+ 
 router = APIRouter(prefix="/posts",tags=["Posts"])
 
 @router.get("/",response_model=list[PostResponse])
@@ -16,17 +15,16 @@ async def get_posts(db: Session = Depends(get_db)):
     return posts 
 
 @router.get("/{id}",response_model=PostResponse)
-async def get_post(id:int,db:Session = Depends(get_db)):
+async def get_post(id:int,db:Session = Depends(get_db),user: int = Depends(oauth2.get_current_user)):
     # cursor.execute("""SELECT * FROM posts WHERE id=%s """,(id,))
     # post = cursor.fetchone()
-
     post = db.query(models.Post).filter(models.Post.id==id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id:{id} not found!")
     return post
 
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=PostResponse)
-async def create_post(post:PostCreate,db:Session = Depends(get_db)):
+async def create_post(post:PostCreate,db:Session = Depends(get_db),user: int = Depends(oauth2.get_current_user)):
     # cursor.execute("""INSERT INTO posts (title,content,published) VALUES (%s,%s,%s) RETURNING *""",(post.title,post.content,post.published))
     # created_post=cursor.fetchone()
     # conn.commit()
@@ -37,7 +35,7 @@ async def create_post(post:PostCreate,db:Session = Depends(get_db)):
     return new_post
 
 @router.delete("/{id}",status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(id:int,db:Session=Depends(get_db)):
+async def delete_post(id:int,db:Session=Depends(get_db),user: int = Depends(oauth2.get_current_user)):
     # cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""",(id,))
     # deleted_post = cursor.fetchone()
     post = db.query(models.Post).filter(models.Post.id==id)
@@ -50,7 +48,7 @@ async def delete_post(id:int,db:Session=Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
    
 @router.put("/{id}",response_model=PostResponse)
-async def update_post(id:int, post:PostCreate,db:Session=Depends(get_db)):
+async def update_post(id:int, post:PostCreate,db:Session=Depends(get_db),user:int = Depends(oauth2.get_current_user)):
     # cursor.execute("""UPDATE posts SET title=%s,content=%s,published=%s WHERE id=%s RETURNING *""",(post.title,post.content,post.published,id,))
     # updated_post=cursor.fetchone()
 
